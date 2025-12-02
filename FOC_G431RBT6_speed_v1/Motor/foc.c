@@ -173,7 +173,7 @@ void lib_torque_control(float torque_norm_d, float torque_norm_q)
 void lib_speed_torque_control(float speed_rad, float max_torque_norm)
 {
     float torque_norm = speed_loop(speed_rad);
-    torque_norm = min(fabs(torque_norm), max_torque_norm) * (torque_norm > 0 ? 1 : -1);
+    torque_norm = min(fabs(torque_norm), max_torque_norm) * (torque_norm > 0 ? 0.85 : -0.85);
     lib_torque_control(0, torque_norm);
 }
 

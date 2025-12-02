@@ -153,19 +153,6 @@ int main(void)
   LL_SPI_EnableDMAReq_TX(SPI1); // 4️⃣ 启动 SPI DMA 请求
   LL_SPI_EnableDMAReq_RX(SPI1);
   LL_SPI_Enable(SPI1);
-  /*中断版本------------------------------------------------------------------*/
-
-  // LL_SPI_Enable(SPI1);
-  // LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
-  // LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_4);
-  // LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_3,
-  //                        LL_SPI_DMA_GetRegAddr(SPI1),
-  //                        (uint32_t)KTH7823_rx_data,
-  //                        LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
-  // LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_4,
-  //                        (uint32_t)KTH7823_tx_data,
-  //                        LL_SPI_DMA_GetRegAddr(SPI1),
-  //                        LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
 
   HAL_GPIO_WritePin(SD1_GPIO_Port, SD1_Pin, GPIO_PIN_SET);
   HAL_GPIO_WritePin(SD2_GPIO_Port, SD2_Pin, GPIO_PIN_SET);
@@ -174,7 +161,7 @@ int main(void)
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
   // set_pwm_duty(0.5, 0, 0);
-  rotor_zero_angle = 0.11; // 0.12
+  rotor_zero_angle = 0.11; // 0编码器点校准
   // HAL_Delay(500);
   // set_pwm_duty(0, 0, 0);
 
@@ -186,125 +173,27 @@ int main(void)
 
   set_motor_pid(
       0.18, 0, 2,
-      0.2, 0, 0,
+      2, 0.0005, 0,
       0.2, 0.004, 0,
       0.2, 0.004, 0);
 
-  motor_control_context.torque_norm_d = 0;
-  motor_control_context.torque_norm_q = 0;
-  motor_control_context.type = control_type_torque;
-
-  // motor_control_context.speed = 10;
-  // motor_control_context.type = control_type_speed;
-
-  // motor_control_context.position = deg2rad(0); // 上电时的角度当作0度
-  // motor_control_context.type = control_type_position;
-
-  /* USER CODE END 2 */
-
-  /* Infinite loop */
-  /* USER CODE BEGIN WHILE */
-
-  // bool direction = true;  //(1)阶跃波
+  // motor_control_context.torque_norm_d = 0;
+  // motor_control_context.torque_norm_q = 0;
+  motor_control_context.speed=4;
+  motor_control_context.type = control_type_speed_torque;
 
   // // 使能 DWT 外设
-  // CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; //(2)正弦波 (4)(5) 阻尼顺滑模式
+  // CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
   // DWT->CYCCNT = 0;                                // 清零计数
   // DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;            // 启动
-
-  // // FOC 棘轮旋钮  kp=0.5
-  // uint8_t num = 32; //(3) 棘轮旋钮
-  // float target = 2 * PI / num;
-  // uint8_t select = 0;
-
-  // FOC 旋钮顺滑模式      //(4) 旋钮顺滑模式
-
-  // FOC 旋钮阻尼模式      //(5) 旋钮阻尼模式
-
-  //(6)边界旋钮 //kp=0.18
-  // float diff = 2 * PI / 3;
-  // float R = -diff / 2;
-  // float L = diff / 2;
-
-  // uint8_t num = 64;
-  // float target = 2 * PI / num;
-  // int8_t select = 0;
-
-  //(7) 弹簧效果
-  float target = 0;
-  float T;
 
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    // if (direction)                               //(1) 阶跃波 (力矩)
-    //   motor_control_context.torque_norm_q = 0.4;
-    // else
-    //   motor_control_context.torque_norm_q = -0.4;
-    // HAL_Delay(250);
-    // direction = !direction;
-
-    // for (int i = 0; i < 360; i++)                  //(2)正弦波 (力矩)
-    // {
-    //   motor_control_context.torque_norm_q = 0.4 * arm_sin_f32(deg2rad(i));
-    //   // HAL_Delay(2);        // sin-test1
-    //   DWT_Delay_us(500);      //sin-test2
-    // }
-
-    // while (motor_logic_angle < 0)        //(3) 棘轮旋钮
-    // {
-    //   motor_logic_angle += 2 * PI;
-    // }
-    // motor_logic_angle = fmod(motor_logic_angle, 2 * PI);
-    // select = (uint8_t)roundf(motor_logic_angle / target);
-    // motor_control_context.position = select * target;
-    // HAL_Delay(10);
-
-    //(4)旋钮顺滑模式  (力矩)
-    // motor_control_context.torque_norm_q = 0.4 * motor_speed / 100;
-    // DWT_Delay_us(800);
-
-    //(5)旋钮阻尼模式 (力矩)
-    // motor_control_context.torque_norm_q = -0.4 * motor_speed / 100;
-    // HAL_Delay(1);
-
-    // //(6)边界旋钮
-    // if (R <= motor_logic_angle && motor_logic_angle <= L)
-    // {
-    //   // motor_control_context.torque_norm_d = 0;
-    //   // motor_control_context.torque_norm_q = 0;
-    //   // motor_control_context.type = control_type_torque;
-    //   // HAL_Delay(10);
-    //   float temp = motor_logic_angle / target;
-    //   if (temp > 0)
-    //     select = floorf(temp + 0.5f);
-    //   else if (temp < 0)
-    //   {
-    //     select = floorf(fabs(temp) + 0.5f);
-    //     select = -1 * select;
-    //   }
-    //   motor_control_context.position = select * target;
-    //   HAL_Delay(10);
-    // }
-    // else
-    // {
-    //   // motor_control_context.type = control_type_position;
-    //   if (motor_logic_angle > L)
-    //     motor_control_context.position = L - PI / 18;
-    //   else if (motor_logic_angle < R)
-    //     motor_control_context.position = R + PI / 24;
-    //   // motor_control_context.position = 0;
-    //   HAL_Delay(15);
-    // }
-
-    //(7)弹簧效果
-    T = -(motor_logic_angle - target) / 1.2 - 0.6 * motor_speed / 40;
-    motor_control_context.torque_norm_q = T;
-    HAL_Delay(8);
+    /* USER CODE END 3 */
   }
-  /* USER CODE END 3 */
 }
 
 /**

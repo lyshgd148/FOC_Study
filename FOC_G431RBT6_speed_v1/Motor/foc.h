@@ -31,6 +31,7 @@ float cycle_diff(float diff, float cycle);
 void lib_position_control(float rad);
 void lib_speed_control(float speed);
 void lib_torque_control(float torque_norm_d, float torque_norm_q);
+void lib_speed_torque_control(float speed_rad, float max_torque_norm);
 void lib_position_speed_torque_control(float position, float max_speed, float max_torque_norm);
 
 void set_motor_pid(
