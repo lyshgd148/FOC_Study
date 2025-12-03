@@ -59,7 +59,6 @@
 
 /* External variables --------------------------------------------------------*/
 extern ADC_HandleTypeDef hadc2;
-extern TIM_HandleTypeDef htim3;
 extern DMA_HandleTypeDef hdma_usart1_rx;
 extern DMA_HandleTypeDef hdma_usart1_tx;
 extern UART_HandleTypeDef huart1;
@@ -256,8 +255,6 @@ void DMA1_Channel3_IRQHandler(void)
       angle_raw = ((uint16_t)KTH7823_rx_data[0] << 8) | (uint16_t)(KTH7823_rx_data[1]);
     }
 
-    // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_10);
-
     LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
     LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_4);
     LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_3, 2);
@@ -297,20 +294,6 @@ void ADC1_2_IRQHandler(void)
   /* USER CODE BEGIN ADC1_2_IRQn 1 */
 
   /* USER CODE END ADC1_2_IRQn 1 */
-}
-
-/**
-  * @brief This function handles TIM3 global interrupt.
-  */
-void TIM3_IRQHandler(void)
-{
-  /* USER CODE BEGIN TIM3_IRQn 0 */
-
-  /* USER CODE END TIM3_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim3);
-  /* USER CODE BEGIN TIM3_IRQn 1 */
-
-  /* USER CODE END TIM3_IRQn 1 */
 }
 
 /**

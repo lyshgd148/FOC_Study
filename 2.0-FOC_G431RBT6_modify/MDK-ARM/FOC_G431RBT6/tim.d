@@ -38,8 +38,4 @@ foc_g431rbt6/tim.o: ..\Core\Src\tim.c ..\Core\Inc\tim.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_utils.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_pwr.h \
   ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_spi.h \
-  ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_gpio.h \
-  ..\Motor\conf.h ..\Motor\global_def.h ..\Motor\motor_runtime_param.h \
-  ..\Motor\foc.h ..\Motor\filter.h \
-  ..\Middlewares\ST\ARM\DSP\Inc\arm_math.h \
-  ..\Drivers\CMSIS\Include\cmsis_compiler.h
+  ..\Drivers\STM32G4xx_HAL_Driver\Inc\stm32g4xx_ll_gpio.h

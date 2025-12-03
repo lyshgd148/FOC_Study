@@ -69,8 +69,7 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define motor_speed_calc_freq 4000
-#define motor_pwm_freq 20000
+#define motor_pwm_freq 8000
 #define SD2_Pin GPIO_PIN_1
 #define SD2_GPIO_Port GPIOA
 #define SD3_Pin GPIO_PIN_2

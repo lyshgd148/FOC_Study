@@ -11,8 +11,8 @@
 #define ADC_BITS 12            // ADC精度，bit
 
 // 单片机配置参数：
-#define motor_pwm_freq 20000      // 驱动桥pwm频率，Hz
-#define motor_speed_calc_freq 4000 // 电机速度计算频率，Hz
+// #define motor_pwm_freq 10000      // 驱动桥pwm频率，Hz
+// #define motor_speed_calc_freq 4000 // 电机速度计算频率，Hz
 
 // 软件参数：
 #define position_cycle 6 * 3.14159265358979 // 电机多圈周期，等于正半周期+负半周期

@@ -24,7 +24,6 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
-#include <stdbool.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -78,14 +77,6 @@ void set_pwm_duty(float d_u, float d_v, float d_w)
   __enable_irq();
 }
 
-void DWT_Delay_us(uint32_t us)
-{
-  uint32_t start = DWT->CYCCNT;
-  uint32_t cycles = us * (SystemCoreClock / 1000000);
-  while ((DWT->CYCCNT - start) < cycles)
-    ;
-}
-
 /* USER CODE END 0 */
 
 /**
@@ -124,7 +115,6 @@ int main(void)
   MX_DMA_Init();
   MX_SPI1_Init();
   MX_USART1_UART_Init();
-  MX_TIM3_Init();
   MX_TIM1_Init();
   MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
@@ -164,29 +154,25 @@ int main(void)
   rotor_zero_angle = 0.11; // 0编码器点校准
   // HAL_Delay(500);
   // set_pwm_duty(0, 0, 0);
-
-  HAL_TIM_Base_Start_IT(&htim3);
-  HAL_Delay(100);
-
   HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
   HAL_ADCEx_InjectedStart_IT(&hadc2);
+  HAL_Delay(500);
 
   set_motor_pid(
       0.18, 0, 2,
       2, 0.01, 0,
-      0.2, 0.004, 0,
+      0.2, 0.01, 0,
       0.2, 0.004, 0);
 
   // motor_control_context.torque_norm_d = 0;
   // motor_control_context.torque_norm_q = 0;
-  motor_control_context.speed=3.14*6;
+  motor_control_context.speed = PI * 2 * 2;
   motor_control_context.type = control_type_speed_torque;
 
-  // // 使能 DWT 外设
-  // CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
-  // DWT->CYCCNT = 0;                                // 清零计数
-  // DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;            // 启动
+  /* USER CODE END 2 */
 
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
   while (1)
   {
     /* USER CODE END WHILE */
