@@ -89,9 +89,11 @@ int main(void)
   /* USER CODE BEGIN 1 */
   struct Frame
   {
-    float data[3];
+    float data[2];
     unsigned char tail[4];
   };
+
+  struct Frame frame = {.tail = {0x00, 0x00, 0x80, 0x7f}};
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -144,42 +146,66 @@ int main(void)
   LL_SPI_EnableDMAReq_RX(SPI1);
   LL_SPI_Enable(SPI1);
 
-  HAL_GPIO_WritePin(SD1_GPIO_Port, SD1_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(SD2_GPIO_Port, SD2_Pin, GPIO_PIN_SET);
-  HAL_GPIO_WritePin(SD3_GPIO_Port, SD3_Pin, GPIO_PIN_SET);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
   HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);
-  // set_pwm_duty(0.5, 0, 0);
-  rotor_zero_angle = 0.11; // 0编码器点校准
-  // HAL_Delay(500);
-  // set_pwm_duty(0, 0, 0);
+
   HAL_ADCEx_Calibration_Start(&hadc2, ADC_SINGLE_ENDED);
   HAL_ADCEx_InjectedStart_IT(&hadc2);
-  HAL_Delay(500);
+  HAL_Delay(1000);
+
+  HAL_GPIO_WritePin(SD1_GPIO_Port, SD1_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(SD2_GPIO_Port, SD2_Pin, GPIO_PIN_SET);
+  HAL_GPIO_WritePin(SD3_GPIO_Port, SD3_Pin, GPIO_PIN_SET);
+
+  // set_pwm_duty(0.1, 0, 0);
+  // HAL_Delay(500);
+  rotor_zero_angle = 0.110159; // 0编码器点校准
+  // HAL_Delay(500);
+  // set_pwm_duty(0, 0, 0);
 
   set_motor_pid(
-      0.18, 0, 2,
-      2, 0.01, 0,
-      0.2, 0.01, 0,
-      0.2, 0.004, 0);
+      14, 0.0001, 20,
+      0.08, 0.0001, 0,
+      0.1, 0.004, 0,
+      0.1, 0.004, 0);
+
+  // set_motor_pid(
+  //     14, 0.0001, 20,
+  //     0.11, 0.00015, 0,
+  //     0.08, 0.0004, 0,
+  //     0.08, 0.0004, 0);
 
   // motor_control_context.torque_norm_d = 0;
-  // motor_control_context.torque_norm_q = 0;
-  motor_control_context.speed = PI * 2 * 2;
+  // motor_control_context.torque_norm_q = 0.6;
+  // motor_control_context.type = control_type_torque;
+
+  // motor_control_context.position = PI;
+  // motor_control_context.max_speed = 40;
+  // motor_control_context.max_torque_norm = 0.8;
+  // motor_control_context.type = control_type_position_speed_torque;
+
+  motor_control_context.speed = PI * 2 * 1;
   motor_control_context.type = control_type_speed_torque;
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    /* USER CODE END 3 */
+
+    // frame.data[0] = motor_i_q;
+    // frame.data[1] = (encoder_angle - rotor_zero_angle) * 7;
+    // HAL_UART_Transmit_DMA(&huart1, (uint8_t *)&frame, sizeof(frame));
+
+    // HAL_Delay(1);
   }
+  /* USER CODE END 3 */
 }
 
 /**

@@ -62,8 +62,8 @@ float diff_angle;
 float encoder_angle_last = 0;
 float _motor_speed;
 uint8_t once = 1;
-float fliter_alpha_speed = 0.07;
-float freq_speed=motor_pwm_freq/2;
+float fliter_alpha_speed = 0.075;
+float freq_speed = motor_pwm_freq / 2;
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
@@ -84,7 +84,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 
       calculate_num = 1025;
     }
-
+    /*---------------------------------------------------------*/
     encoder_angle = 2.0f * angle_raw / (1 << 16) * PI;
 
     if (once)
@@ -92,7 +92,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
       once = 0;
       encoder_angle_last = encoder_angle;
     }
-    /*---------------------------------------------------------*/
+
     diff_angle = cycle_diff(encoder_angle - encoder_angle_last, 2 * PI);
     motor_logic_angle = cycle_diff(motor_logic_angle + diff_angle, position_cycle);
 
@@ -126,7 +126,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         lib_position_control(motor_control_context.position);
         break;
       case control_type_speed_torque:
-        lib_speed_torque_control(motor_control_context.speed, 0.8);
+        lib_speed_torque_control(motor_control_context.speed, 0.5);
         break;
       case control_type_torque:
         lib_torque_control(motor_control_context.torque_norm_d, motor_control_context.torque_norm_q);
@@ -138,14 +138,14 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         break;
       }
 
-      // frame.data[0] = motor_speed;
-      frame.data[0] = encoder_angle;
-      frame.data[1] = motor_i_q;
+      frame.data[0] = motor_i_q;
+      frame.data[1] = (encoder_angle_last - rotor_zero_angle) * 7;
+      // frame.data[1] = motor_i_q;
       // frame.data[3] = -(motor_i_u + motor_i_w);
       // frame.data[4] = motor_i_w;
       // frame.data[5] = motor_i_d;
       // frame.data[6] = motor_i_q;
-      
+
       HAL_UART_Transmit_DMA(&huart1, (uint8_t *)&frame, sizeof(frame));
       // HAL_GPIO_TogglePin(GPIOB,GPIO_PIN_10);
     }

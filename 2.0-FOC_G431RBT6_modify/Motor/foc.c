@@ -10,32 +10,48 @@
 #define deg2rad(a) (PI * (a) / 180)
 #define rad2deg(a) (180 * (a) / PI)
 
+extern float test_rotar_angle;
+
+const int v[6][3] = {{1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 1, 1}, {0, 0, 1}, {1, 0, 1}};
+const int K_to_sector[] = {4, 6, 5, 5, 3, 1, 2, 2};
+float amplitude;
+bool A;
+bool B;
+bool C;
+int K;
+int sector;
+float t_m;
+float t_n;
+float t_0;
+float alpha;
+float beta;
+float sin_phi;
+float cos_phi;
 static void svpwm(float phi, float d, float q, float *d_u, float *d_v, float *d_w)
 {
-    float amplitude = sqrtf(d * d + q * q);
+    amplitude = sqrtf(d * d + q * q);
     if (amplitude > 0.88f)
     {
         d = d * 0.88f / amplitude;
         q = q * 0.88f / amplitude;
     }
-    const int v[6][3] = {{1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 1, 1}, {0, 0, 1}, {1, 0, 1}};
-    const int K_to_sector[] = {4, 6, 5, 5, 3, 1, 2, 2};
-    float sin_phi = arm_sin_f32(phi);
-    float cos_phi = arm_cos_f32(phi);
-    float alpha = 0;
-    float beta = 0;
+
+    sin_phi = arm_sin_f32(phi);
+    cos_phi = arm_cos_f32(phi);
+    alpha = 0;
+    beta = 0;
     arm_inv_park_f32(d, q, &alpha, &beta, sin_phi, cos_phi);
 
-    bool A = beta > 0;
-    bool B = fabs(beta) > SQRT3 * fabs(alpha);
-    bool C = alpha > 0;
+    A = beta > 0;
+    B = fabs(beta) > SQRT3 * fabs(alpha);
+    C = alpha > 0;
 
-    int K = 4 * A + 2 * B + C;
-    int sector = K_to_sector[K];
+    K = 4 * A + 2 * B + C;
+    sector = K_to_sector[K];
 
-    float t_m = arm_sin_f32(sector * rad60) * alpha - arm_cos_f32(sector * rad60) * beta;
-    float t_n = beta * arm_cos_f32(sector * rad60 - rad60) - alpha * arm_sin_f32(sector * rad60 - rad60);
-    float t_0 = 1 - t_m - t_n;
+    t_m = arm_sin_f32(sector * rad60) * alpha - arm_cos_f32(sector * rad60) * beta;
+    t_n = beta * arm_cos_f32(sector * rad60 - rad60) - alpha * arm_sin_f32(sector * rad60 - rad60);
+    t_0 = 1 - t_m - t_n;
     if (t_0 < 0)
         t_0 = 0;
 
@@ -167,7 +183,7 @@ void lib_torque_control(float torque_norm_d, float torque_norm_q)
 {
     d = torque_d_loop(torque_norm_d);
     q = torque_q_loop(torque_norm_q);
-    foc_forward(d, q, rotor_logic_angle);
+    foc_forward(d, q, rotor_logic_angle); // rotor_logic_angle
 }
 
 void lib_speed_torque_control(float speed_rad, float max_torque_norm)
@@ -180,6 +196,6 @@ void lib_speed_torque_control(float speed_rad, float max_torque_norm)
 void lib_position_speed_torque_control(float position_rad, float max_speed_rad, float max_torque_norm)
 {
     float speed_rad = position_loop(position_rad);
-    speed_rad = min(fabs(speed_rad), max_speed_rad) * (speed_rad > 0 ? 1 : -1);
+    speed_rad = min(fabs(speed_rad), max_speed_rad) * (speed_rad > 0 ? 0.85 : -0.85);
     lib_speed_torque_control(speed_rad, max_torque_norm);
 }

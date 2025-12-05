@@ -17,8 +17,7 @@
                 "E:\\Keil5\\ARM\\ARMCLANG\\include\\libcxx",
                 "f:\\FOC\\2.0-FOC_G431RBT6_modify\\MDK-ARM",
                 "f:\\FOC\\2.0-FOC_G431RBT6_modify\\Drivers\\STM32G4xx_HAL_Driver\\Src",
-                "f:\\FOC\\2.0-FOC_G431RBT6_modify\\Core\\Src",
-                "f:\\FOC\\2.0-FOC_G431RBT6_modify\\Middlewares\\ST\\ARM\\DSP\\Lib"
+                "f:\\FOC\\2.0-FOC_G431RBT6_modify\\Core\\Src"
             ],
             "defines": [
                 "USE_HAL_DRIVER",
