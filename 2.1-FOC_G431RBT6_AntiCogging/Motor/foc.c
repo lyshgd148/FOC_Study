@@ -1,0 +1,203 @@
+// foc.c
+#include "foc.h"
+#include "arm_math.h"
+#include "motor_runtime_param.h"
+#include "global_def.h"
+#include "anti_cogging.h"
+
+#include <stdbool.h>
+
+#define rad60 deg2rad(60)
+#define SQRT3 1.73205080756887729353
+#define deg2rad(a) (PI * (a) / 180)
+#define rad2deg(a) (180 * (a) / PI)
+
+extern float test_rotar_angle;
+
+const int v[6][3] = {{1, 0, 0}, {1, 1, 0}, {0, 1, 0}, {0, 1, 1}, {0, 0, 1}, {1, 0, 1}};
+const int K_to_sector[] = {4, 6, 5, 5, 3, 1, 2, 2};
+float amplitude;
+bool A;
+bool B;
+bool C;
+int K;
+int sector;
+float t_m;
+float t_n;
+float t_0;
+float alpha;
+float beta;
+float sin_phi;
+float cos_phi;
+static void svpwm(float phi, float d, float q, float *d_u, float *d_v, float *d_w)
+{
+    amplitude = sqrtf(d * d + q * q);
+    if (amplitude > 0.88f)
+    {
+        d = d * 0.88f / amplitude;
+        q = q * 0.88f / amplitude;
+    }
+
+    sin_phi = arm_sin_f32(phi);
+    cos_phi = arm_cos_f32(phi);
+    alpha = 0;
+    beta = 0;
+    arm_inv_park_f32(d, q, &alpha, &beta, sin_phi, cos_phi);
+
+    A = beta > 0;
+    B = fabs(beta) > SQRT3 * fabs(alpha);
+    C = alpha > 0;
+
+    K = 4 * A + 2 * B + C;
+    sector = K_to_sector[K];
+
+    t_m = arm_sin_f32(sector * rad60) * alpha - arm_cos_f32(sector * rad60) * beta;
+    t_n = beta * arm_cos_f32(sector * rad60 - rad60) - alpha * arm_sin_f32(sector * rad60 - rad60);
+    t_0 = 1 - t_m - t_n;
+    if (t_0 < 0)
+        t_0 = 0;
+
+    *d_u = t_m * v[sector - 1][0] + t_n * v[sector % 6][0] + t_0 / 2;
+    *d_v = t_m * v[sector - 1][1] + t_n * v[sector % 6][1] + t_0 / 2;
+    *d_w = t_m * v[sector - 1][2] + t_n * v[sector % 6][2] + t_0 / 2;
+}
+
+__attribute__((weak)) void set_pwm_duty(float d_u, float d_v, float d_w)
+{
+    while (1)
+        ;
+}
+
+void foc_forward(float d, float q, float rotor_rad)
+{
+    float d_u = 0;
+    float d_v = 0;
+    float d_w = 0;
+    svpwm(rotor_rad, d, q, &d_u, &d_v, &d_w);
+    set_pwm_duty(d_u, d_v, d_w);
+}
+
+float cycle_diff(float diff, float cycle)
+{
+    if (diff > (cycle / 2))
+        diff -= cycle;
+    else if (diff < (-cycle / 2))
+        diff += cycle;
+    return diff;
+}
+
+motor_control_context_t motor_control_context;
+static arm_pid_instance_f32 pid_position;
+static arm_pid_instance_f32 pid_speed;
+static arm_pid_instance_f32 pid_torque_d;
+static arm_pid_instance_f32 pid_torque_q;
+void set_motor_pid(
+    float position_p, float position_i, float position_d,
+    float speed_p, float speed_i, float speed_d,
+    float torque_d_p, float torque_d_i, float torque_d_d,
+    float torque_q_p, float torque_q_i, float torque_q_d)
+{
+    pid_position.Kp = position_p;
+    pid_position.Ki = position_i;
+    pid_position.Kd = position_d;
+
+    pid_speed.Kp = speed_p;
+    pid_speed.Ki = speed_i;
+    pid_speed.Kd = speed_d;
+
+    pid_torque_d.Kp = torque_d_p;
+    pid_torque_d.Ki = torque_d_i;
+    pid_torque_d.Kd = torque_d_d;
+
+    pid_torque_q.Kp = torque_q_p;
+    pid_torque_q.Ki = torque_q_i;
+    pid_torque_q.Kd = torque_q_d;
+    arm_pid_init_f32(&pid_position, false); // false代表清空内部增量数据
+    arm_pid_init_f32(&pid_speed, false);
+    arm_pid_init_f32(&pid_torque_d, false);
+    arm_pid_init_f32(&pid_torque_q, false);
+}
+
+static float position_loop(float rad)
+{
+    float diff = cycle_diff(rad - motor_logic_angle, position_cycle);
+    return arm_pid_f32(&pid_position, diff);
+}
+void lib_position_control(float rad)
+{
+    float d = 0;
+    float q = position_loop(rad);
+    foc_forward(d, q, rotor_logic_angle);
+}
+
+static float speed_loop(float speed_rad)
+{
+    float diff = speed_rad - motor_speed;
+    return arm_pid_f32(&pid_speed, diff);
+}
+void lib_speed_control(float speed)
+{
+    float d = 0;
+    float q = speed_loop(speed);
+    foc_forward(d, q, rotor_logic_angle);
+}
+
+float diff_d;
+float out_unlimited_d;
+float out_limited_d;
+float Kt_d = 0.7f; //  后积分增益 (Anti-windup Gain)
+float error_integral_windup_d;
+
+static float torque_d_loop(float d)
+{
+    diff_d = d - motor_i_d / MAX_CURRENT;
+    out_unlimited_d = arm_pid_f32(&pid_torque_d, diff_d);
+
+    out_limited_d = min(out_unlimited_d, 0.9);
+    out_limited_d = max(out_limited_d, -0.9);
+
+    error_integral_windup_d = out_limited_d - out_unlimited_d; //  积分饱和误差
+    pid_torque_d.state[0] -= (pid_torque_d.Ki * Kt_d * error_integral_windup_d);
+
+    return out_limited_d;
+}
+
+float diff_q;
+float out_unlimited_q;
+float out_limited_q;
+float Kt_q = 0.7f; //  后积分增益 (Anti-windup Gain)
+float error_integral_windup_q;
+static float torque_q_loop(float q)
+{
+    diff_q = q - motor_i_q / MAX_CURRENT;
+    out_unlimited_q = arm_pid_f32(&pid_torque_q, diff_q);
+    out_limited_q = min(out_unlimited_q, 0.9);
+    out_limited_q = max(out_limited_q, -0.9);
+
+    error_integral_windup_q = out_limited_q - out_unlimited_q; //  积分饱和误差
+    pid_torque_q.state[0] -= (pid_torque_q.Ki * Kt_q * error_integral_windup_q);
+
+    return out_limited_q;
+}
+float d;
+float q;
+void lib_torque_control(float torque_norm_d, float torque_norm_q)
+{
+    d = torque_d_loop(torque_norm_d);
+    q = torque_q_loop(torque_norm_q)+Anti_Cogging();
+    foc_forward(d, q, rotor_logic_angle); // rotor_logic_angle
+}
+
+void lib_speed_torque_control(float speed_rad, float max_torque_norm)
+{
+    float torque_norm = speed_loop(speed_rad);
+    torque_norm = min(fabs(torque_norm), max_torque_norm) * (torque_norm > 0 ? 0.85 : -0.85);
+    lib_torque_control(0, torque_norm);
+}
+
+void lib_position_speed_torque_control(float position_rad, float max_speed_rad, float max_torque_norm)
+{
+    float speed_rad = position_loop(position_rad);
+    speed_rad = min(fabs(speed_rad), max_speed_rad) * (speed_rad > 0 ? 0.85 : -0.85);
+    lib_speed_torque_control(speed_rad, max_torque_norm);
+}
