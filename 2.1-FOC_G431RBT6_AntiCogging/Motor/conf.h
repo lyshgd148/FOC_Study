@@ -6,7 +6,7 @@
 // 电路参数：
 #define R_SHUNT 0.005           // 电流采样电阻，欧姆
 #define OP_GAIN 10             // 运放放大倍数
-#define MAX_CURRENT 2          // 最大q轴电流，安培A
+#define MAX_CURRENT 3          // 最大q轴电流，安培A
 #define ADC_REFERENCE_VOLT 3.3 // 电流采样adc参考电压，伏
 #define ADC_BITS 12            // ADC精度，bit
 

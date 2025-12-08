@@ -167,8 +167,8 @@ int main(void)
   set_motor_pid(
       14, 0.0001, 20,
       0.08, 0.0001, 0,
-      0.1, 0.004, 0,
-      0.1, 0.004, 0);
+      0.08, 0.004, 0,
+      0.08, 0.004, 0);
 
   // set_motor_pid(
   //     14, 0.0001, 20,
@@ -185,7 +185,7 @@ int main(void)
   // motor_control_context.max_torque_norm = 0.8;
   // motor_control_context.type = control_type_position_speed_torque;
 
-  motor_control_context.speed = PI * 2 * 1;
+  motor_control_context.speed = PI * 2 * 10;
   motor_control_context.type = control_type_speed_torque;
 
   /* USER CODE END 2 */
