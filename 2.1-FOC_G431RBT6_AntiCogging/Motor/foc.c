@@ -184,7 +184,7 @@ float q;
 void lib_torque_control(float torque_norm_d, float torque_norm_q)
 {
     d = torque_d_loop(torque_norm_d);
-    q = torque_q_loop(torque_norm_q)+Anti_Cogging()*2/MAX_CURRENT;
+    q = torque_q_loop(torque_norm_q) +0.5* Anti_Cogging() / MAX_CURRENT;
     foc_forward(d, q, rotor_logic_angle); // rotor_logic_angle
 }
 

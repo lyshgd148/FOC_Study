@@ -62,8 +62,10 @@ float diff_angle;
 float encoder_angle_last = 0;
 float _motor_speed;
 uint8_t once = 1;
-float fliter_alpha_speed = 0.075;
+float fliter_alpha_speed = 0.08;
 float freq_speed = motor_pwm_freq / 2;
+
+int count_speed = 0;
 
 void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
@@ -85,6 +87,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
       calculate_num = 1025;
     }
     /*---------------------------------------------------------*/
+
     encoder_angle = 2.0f * angle_raw / (1 << 16) * PI;
 
     if (once)
@@ -93,13 +96,18 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
       encoder_angle_last = encoder_angle;
     }
 
-    diff_angle = cycle_diff(encoder_angle - encoder_angle_last, 2 * PI);
-    motor_logic_angle = cycle_diff(motor_logic_angle + diff_angle, position_cycle);
+    if (count_speed == 0)
+    {
+      diff_angle = cycle_diff(encoder_angle - encoder_angle_last, 2 * PI);
+      motor_logic_angle = cycle_diff(motor_logic_angle + diff_angle, position_cycle);
 
-    diff_angle = cycle_diff(encoder_angle - encoder_angle_last, 2 * PI);
-    encoder_angle_last = encoder_angle;
-    _motor_speed = diff_angle * freq_speed;
-    motor_speed = LFP(_motor_speed, motor_speed, fliter_alpha_speed);
+      diff_angle = cycle_diff(encoder_angle - encoder_angle_last, 2 * PI);
+      encoder_angle_last = encoder_angle;
+
+      _motor_speed = diff_angle * freq_speed / 14;
+      motor_speed = LFP(_motor_speed, motor_speed, fliter_alpha_speed);
+    }
+
     /*---------------------------------------------------------*/
     if (run_state)
     {
@@ -126,7 +134,10 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
         lib_position_control(motor_control_context.position);
         break;
       case control_type_speed_torque:
-        lib_speed_torque_control(motor_control_context.speed, 0.6);
+        if (count_speed == 0)
+          lib_speed_torque_control(motor_control_context.speed, 0.6);
+        count_speed++;
+        count_speed %= 14;
         break;
       case control_type_torque:
         lib_torque_control(motor_control_context.torque_norm_d, motor_control_context.torque_norm_q);
@@ -139,7 +150,7 @@ void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
       }
 
       frame.data[0] = motor_i_q;
-      frame.data[1] = (encoder_angle_last - rotor_zero_angle) * 7;
+      frame.data[1] = (encoder_angle - rotor_zero_angle) * POLE_PAIRS;
       // frame.data[1] = motor_i_q;
       // frame.data[3] = -(motor_i_u + motor_i_w);
       // frame.data[4] = motor_i_w;
@@ -170,7 +181,7 @@ void MX_ADC2_Init(void)
   /* USER CODE END ADC2_Init 1 */
 
   /** Common config
-  */
+   */
   hadc2.Instance = ADC2;
   hadc2.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc2.Init.Resolution = ADC_RESOLUTION_12B;
@@ -191,7 +202,7 @@ void MX_ADC2_Init(void)
   }
 
   /** Configure Injected Channel
-  */
+   */
   sConfigInjected.InjectedChannel = ADC_CHANNEL_3;
   sConfigInjected.InjectedRank = ADC_INJECTED_RANK_1;
   sConfigInjected.InjectedSamplingTime = ADC_SAMPLETIME_24CYCLES_5;
@@ -211,7 +222,7 @@ void MX_ADC2_Init(void)
   }
 
   /** Configure Injected Channel
-  */
+   */
   sConfigInjected.InjectedChannel = ADC_CHANNEL_17;
   sConfigInjected.InjectedRank = ADC_INJECTED_RANK_2;
   if (HAL_ADCEx_InjectedConfigChannel(&hadc2, &sConfigInjected) != HAL_OK)
@@ -221,18 +232,17 @@ void MX_ADC2_Init(void)
   /* USER CODE BEGIN ADC2_Init 2 */
 
   /* USER CODE END ADC2_Init 2 */
-
 }
 
-void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
+void HAL_ADC_MspInit(ADC_HandleTypeDef *adcHandle)
 {
 
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(adcHandle->Instance==ADC2)
+  if (adcHandle->Instance == ADC2)
   {
-  /* USER CODE BEGIN ADC2_MspInit 0 */
+    /* USER CODE BEGIN ADC2_MspInit 0 */
 
-  /* USER CODE END ADC2_MspInit 0 */
+    /* USER CODE END ADC2_MspInit 0 */
     LL_RCC_SetADCClockSource(LL_RCC_ADC12_CLKSOURCE_SYSCLK);
 
     /* ADC2 clock enable */
@@ -243,7 +253,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     PA4     ------> ADC2_IN17
     PA6     ------> ADC2_IN3
     */
-    GPIO_InitStruct.Pin = IC_Pin|IA_Pin;
+    GPIO_InitStruct.Pin = IC_Pin | IA_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -251,20 +261,20 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     /* ADC2 interrupt Init */
     HAL_NVIC_SetPriority(ADC1_2_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(ADC1_2_IRQn);
-  /* USER CODE BEGIN ADC2_MspInit 1 */
+    /* USER CODE BEGIN ADC2_MspInit 1 */
 
-  /* USER CODE END ADC2_MspInit 1 */
+    /* USER CODE END ADC2_MspInit 1 */
   }
 }
 
-void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
+void HAL_ADC_MspDeInit(ADC_HandleTypeDef *adcHandle)
 {
 
-  if(adcHandle->Instance==ADC2)
+  if (adcHandle->Instance == ADC2)
   {
-  /* USER CODE BEGIN ADC2_MspDeInit 0 */
+    /* USER CODE BEGIN ADC2_MspDeInit 0 */
 
-  /* USER CODE END ADC2_MspDeInit 0 */
+    /* USER CODE END ADC2_MspDeInit 0 */
     /* Peripheral clock disable */
     __HAL_RCC_ADC12_CLK_DISABLE();
 
@@ -272,13 +282,13 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     PA4     ------> ADC2_IN17
     PA6     ------> ADC2_IN3
     */
-    HAL_GPIO_DeInit(GPIOA, IC_Pin|IA_Pin);
+    HAL_GPIO_DeInit(GPIOA, IC_Pin | IA_Pin);
 
     /* ADC2 interrupt Deinit */
     HAL_NVIC_DisableIRQ(ADC1_2_IRQn);
-  /* USER CODE BEGIN ADC2_MspDeInit 1 */
+    /* USER CODE BEGIN ADC2_MspDeInit 1 */
 
-  /* USER CODE END ADC2_MspDeInit 1 */
+    /* USER CODE END ADC2_MspDeInit 1 */
   }
 }
 
