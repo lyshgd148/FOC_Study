@@ -1,0 +1,28 @@
+--cpu Cortex-M3
+"3.1-inductiveencoder_v1.0\startup_stm32f103xb.o"
+"3.1-inductiveencoder_v1.0\main.o"
+"3.1-inductiveencoder_v1.0\gpio.o"
+"3.1-inductiveencoder_v1.0\dma.o"
+"3.1-inductiveencoder_v1.0\spi.o"
+"3.1-inductiveencoder_v1.0\usart.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_it.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_msp.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_gpio_ex.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_spi.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_rcc.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_rcc_ex.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_gpio.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_dma.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_cortex.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_pwr.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_flash.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_flash_ex.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_exti.o"
+"3.1-inductiveencoder_v1.0\stm32f1xx_hal_uart.o"
+"3.1-inductiveencoder_v1.0\system_stm32f1xx.o"
+"3.1-inductiveencoder_v1.0\ads8631.o"
+--strict --scatter "3.1-InductiveEncoder_V1.0\3.1-InductiveEncoder_V1.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "3.1-InductiveEncoder_V1.map" -o 3.1-InductiveEncoder_V1.0\3.1-InductiveEncoder_V1.0
