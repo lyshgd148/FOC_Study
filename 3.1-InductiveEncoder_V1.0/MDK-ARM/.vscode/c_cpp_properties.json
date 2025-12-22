@@ -3,17 +3,17 @@
         {
             "name": "3.1-InductiveEncoder_V1.0",
             "includePath": [
-                "f:\\FOC\\3.1-InductiveEncoder_V1.0\\Core\\Inc",
-                "f:\\FOC\\3.1-InductiveEncoder_V1.0\\Drivers\\STM32F1xx_HAL_Driver\\Inc",
-                "f:\\FOC\\3.1-InductiveEncoder_V1.0\\Drivers\\STM32F1xx_HAL_Driver\\Inc\\Legacy",
-                "f:\\FOC\\3.1-InductiveEncoder_V1.0\\Drivers\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
-                "f:\\FOC\\3.1-InductiveEncoder_V1.0\\Drivers\\CMSIS\\Include",
-                "f:\\FOC\\3.1-InductiveEncoder_V1.0\\User",
-                "E:\\Keil5\\ARM\\ARMCC\\include",
-                "E:\\Keil5\\ARM\\ARMCC\\include\\rw",
-                "f:\\FOC\\3.1-InductiveEncoder_V1.0\\MDK-ARM",
-                "f:\\FOC\\3.1-InductiveEncoder_V1.0\\Core\\Src",
-                "f:\\FOC\\3.1-InductiveEncoder_V1.0\\Drivers\\STM32F1xx_HAL_Driver\\Src"
+                "c:\\Users\\Lys\\Desktop\\FOC_Study\\3.1-InductiveEncoder_V1.0\\Core\\Inc",
+                "c:\\Users\\Lys\\Desktop\\FOC_Study\\3.1-InductiveEncoder_V1.0\\Drivers\\STM32F1xx_HAL_Driver\\Inc",
+                "c:\\Users\\Lys\\Desktop\\FOC_Study\\3.1-InductiveEncoder_V1.0\\Drivers\\STM32F1xx_HAL_Driver\\Inc\\Legacy",
+                "c:\\Users\\Lys\\Desktop\\FOC_Study\\3.1-InductiveEncoder_V1.0\\Drivers\\CMSIS\\Device\\ST\\STM32F1xx\\Include",
+                "c:\\Users\\Lys\\Desktop\\FOC_Study\\3.1-InductiveEncoder_V1.0\\Drivers\\CMSIS\\Include",
+                "c:\\Users\\Lys\\Desktop\\FOC_Study\\3.1-InductiveEncoder_V1.0\\User",
+                "D:\\Keil\\ARM\\ARMCC\\include",
+                "D:\\Keil\\ARM\\ARMCC\\include\\rw",
+                "c:\\Users\\Lys\\Desktop\\FOC_Study\\3.1-InductiveEncoder_V1.0\\MDK-ARM",
+                "c:\\Users\\Lys\\Desktop\\FOC_Study\\3.1-InductiveEncoder_V1.0\\Core\\Src",
+                "c:\\Users\\Lys\\Desktop\\FOC_Study\\3.1-InductiveEncoder_V1.0\\Drivers\\STM32F1xx_HAL_Driver\\Src"
             ],
             "defines": [
                 "USE_HAL_DRIVER",

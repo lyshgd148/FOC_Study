@@ -15,7 +15,7 @@
         <TargetCommonOption>
           <Device>STM32F103C8</Device>
           <Vendor>STMicroelectronics</Vendor>
-          <PackID>Keil.STM32F1xx_DFP.1.0.5</PackID>
+          <PackID>Keil.STM32F1xx_DFP.2.2.0</PackID>
           <PackURL>http://www.keil.com/pack/</PackURL>
           <Cpu>IRAM(0x20000000-0x20004FFF) IROM(0x8000000-0x800FFFF)  CLOCK(8000000) CPUTYPE("Cortex-M3")</Cpu>
           <FlashUtilSpec></FlashUtilSpec>
@@ -565,14 +565,14 @@
           <GroupName>User</GroupName>
           <Files>
             <File>
-              <FileName>ADS8631.c</FileName>
+              <FileName>ADS8361.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\User\ADS8631.c</FilePath>
+              <FilePath>..\User\ADS8361.c</FilePath>
             </File>
             <File>
-              <FileName>ADS8631.h</FileName>
+              <FileName>ADS8361.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\User\ADS8631.h</FilePath>
+              <FilePath>..\User\ADS8361.h</FilePath>
             </File>
           </Files>
         </Group>
