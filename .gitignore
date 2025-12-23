@@ -1,0 +1,16 @@
+# 编译产物
+*.o
+*.a
+*.elf
+*.map
+*.bin
+*.hex
+
+# 编辑器配置
+**/.vscode/
+.idea/
+
+# 临时文件
+*.swp
+*~
+.DS_Store
