@@ -12,6 +12,7 @@ int16_t Ssin;
 int16_t Scos;
 uint8_t CH;
 int16_t data;
+uint8_t once = 1;
 
 float N = 16;
 float M_deg;
@@ -47,6 +48,7 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
             Ssin = data;
             break;
         case 3:
+
             Scos = data;
             M_deg = atan2f(Msin, Mcos);
             S_deg = atan2f(Ssin, Scos);
@@ -55,11 +57,20 @@ void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
             deg = fmodf(deg, PI2);
             if (deg < 0)
                 deg += PI2;
+            if (once)
+            {
+                once = 0;
+                last_deg = deg;
+            }
+            if ((deg - last_deg) >= PI2 / N)
+                deg -= PI2 / N;
+            else if ((deg - last_deg) < (-PI2 / N))
+                deg += PI2 / N;
             last_deg = deg;
-            ADS8631_GetRawData();
             break;
         default:
             break;
         }
+        ADS8631_GetRawData();
     }
 }
