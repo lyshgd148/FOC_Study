@@ -44,9 +44,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-#define SIZE 10
-uint16_t src[SIZE] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-uint16_t dst[SIZE] = {0};  // 目标数组
+#define SIZE 4
+uint32_t src[SIZE] = {0x12345678, 301, 303, 304};
+uint8_t dst[SIZE] = {0};  // 目标数组
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,7 +94,7 @@ int main(void)
   HAL_DMA_Start(&hdma_memtomem_dma2_stream0,
               (uint32_t)src,
               (uint32_t)dst,
-              SIZE);
+              1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -104,10 +104,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if(dst[SIZE-1]==9){
+	if(dst[0]==0x2c)
+	{
 		HAL_GPIO_TogglePin(test_GPIO_Port, test_Pin);
 		HAL_Delay(100);
-	  }
+	}
 	  
   }
   /* USER CODE END 3 */
