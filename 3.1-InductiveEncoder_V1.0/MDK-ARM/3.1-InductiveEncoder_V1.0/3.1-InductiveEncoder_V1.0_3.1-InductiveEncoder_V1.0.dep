@@ -149,7 +149,7 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h)(0x69084D14)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x69084D14)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h)(0x69084D14)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x69084D14)
-F (../Core/Src/stm32f1xx_it.c)(0x6948E80B)(--c99 -c --cpu Cortex-M3 -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../User-I.\RTE\_3.1-InductiveEncoder_V1.0-IE:\Keil5\ARM\Pack\ARM\CMSIS\6.2.0\CMSIS\Core\Include-IE:\Keil5\ARM\Pack\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="543" -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o 3.1-inductiveencoder_v1.0\stm32f1xx_it.o --omf_browse 3.1-inductiveencoder_v1.0\stm32f1xx_it.crf --depend 3.1-inductiveencoder_v1.0\stm32f1xx_it.d)
+F (../Core/Src/stm32f1xx_it.c)(0x6948FB62)(--c99 -c --cpu Cortex-M3 -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../User-I.\RTE\_3.1-InductiveEncoder_V1.0-IE:\Keil5\ARM\Pack\ARM\CMSIS\6.2.0\CMSIS\Core\Include-IE:\Keil5\ARM\Pack\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="543" -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o 3.1-inductiveencoder_v1.0\stm32f1xx_it.o --omf_browse 3.1-inductiveencoder_v1.0\stm32f1xx_it.crf --depend 3.1-inductiveencoder_v1.0\stm32f1xx_it.d)
 I (../Core/Inc/main.h)(0x6948B59A)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x69084D14)
 I (../Core/Inc/stm32f1xx_hal_conf.h)(0x6948C2A0)
@@ -584,7 +584,8 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_flash_ex.h)(0x69084D14)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x69084D14)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h)(0x69084D14)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x69084D14)
-F (..\User\ADS8631.c)(0x6948DFE5)(--c99 -c --cpu Cortex-M3 -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../User-I.\RTE\_3.1-InductiveEncoder_V1.0-IE:\Keil5\ARM\Pack\ARM\CMSIS\6.2.0\CMSIS\Core\Include-IE:\Keil5\ARM\Pack\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="543" -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o 3.1-inductiveencoder_v1.0\ads8631.o --omf_browse 3.1-inductiveencoder_v1.0\ads8631.crf --depend 3.1-inductiveencoder_v1.0\ads8631.d)
+F (..\User\ADS8361.c)(0x6949F45E)(--c99 -c --cpu Cortex-M3 -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc -I ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F1xx/Include -I ../Drivers/CMSIS/Include -I ../User-I.\RTE\_3.1-InductiveEncoder_V1.0-IE:\Keil5\ARM\Pack\ARM\CMSIS\6.2.0\CMSIS\Core\Include-IE:\Keil5\ARM\Pack\Keil\STM32F1xx_DFP\1.0.5\Device\Include-D__UVISION_VERSION="543" -DSTM32F10X_MD -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F103xB-o 3.1-inductiveencoder_v1.0\ads8361.o --omf_browse 3.1-inductiveencoder_v1.0\ads8361.crf --depend 3.1-inductiveencoder_v1.0\ads8361.d)
+I (..\User\ADS8361.h)(0x6949EBA2)
 I (../Core/Inc/spi.h)(0x6948B599)
 I (../Core/Inc/main.h)(0x6948B59A)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h)(0x69084D14)
@@ -614,4 +615,5 @@ I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_pwr.h)(0x69084D14)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_spi.h)(0x69084D14)
 I (../Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h)(0x69084D14)
 I (../Core/Inc/gpio.h)(0x6948B599)
-F (..\User\ADS8631.h)(0x6948D8FC)()
+I (E:\Keil5\ARM\ARMCC\include\math.h)(0x5475F2FE)
+F (..\User\ADS8361.h)(0x6949EBA2)()
